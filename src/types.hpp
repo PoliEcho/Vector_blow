@@ -5,6 +5,14 @@
 #include <cmath>
 #include <iostream>
 
+enum enemy_ai_type {
+  RANDOM,
+  FLYER,
+  GUNNER,
+  ACE,
+  BOSS,
+};
+
 struct Angle {
 private:
   float value{0};
@@ -105,10 +113,17 @@ struct sdl_session {
   SDL_Renderer *renderer;
 };
 
-struct player_ship_type {
+struct ship_type {
   SDL_FRect rect;
   SDL_FPoint gun_offset;
   SDL_Texture *texture;
+};
+
+struct enemy_type {
+  ship_type ship;
+  enemy_ai_type type;
+  Uint32 last_shot;
+  Uint32 reload_time;
 };
 
 struct projectile {

@@ -1,12 +1,9 @@
-#include "const.hpp"
+#pragma once
 #include <SDL3/SDL.h>
+#include <SDL3/SDL_rect.h>
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
 #include <iostream>
-#include <optional>
-
-#ifndef TYPES_NS
-#define TYPES_NS
 
 struct Angle {
 private:
@@ -41,9 +38,61 @@ public:
     normalize();
     return *this;
   }
+  // Binary operators for int
+  Angle operator+(int rhs) const {
+    return Angle(static_cast<int>(value) + rhs);
+  }
+
+  Angle operator-(int rhs) const {
+    return Angle(static_cast<int>(value) - rhs);
+  }
+
+  Angle operator*(int rhs) const {
+    return Angle(static_cast<int>(value * rhs));
+  }
+
+  Angle operator/(int rhs) const {
+    return Angle(static_cast<int>(value / rhs));
+  }
+
+  // Binary operators for double
+  Angle operator+(double rhs) const {
+    return Angle(static_cast<int>(value + rhs));
+  }
+
+  Angle operator-(double rhs) const {
+    return Angle(static_cast<int>(value - rhs));
+  }
+
+  Angle operator*(double rhs) const {
+    return Angle(static_cast<int>(value * rhs));
+  }
+
+  Angle operator/(double rhs) const {
+    return Angle(static_cast<int>(value / rhs));
+  }
+
+  // Binary operators for float
+  Angle operator+(float rhs) const {
+    return Angle(static_cast<int>(value + rhs));
+  }
+
+  Angle operator-(float rhs) const {
+    return Angle(static_cast<int>(value - rhs));
+  }
+
+  Angle operator*(float rhs) const {
+    return Angle(static_cast<int>(value * rhs));
+  }
+
+  Angle operator/(float rhs) const {
+    return Angle(static_cast<int>(value / rhs));
+  }
 
   // Type conversion
-  operator int() const { return value; }
+  operator int() const { return static_cast<int>(value); }
+  operator double() const { return static_cast<double>(value); }
+  operator float() const { return value; }
 
   // Stream output
   friend std::ostream &operator<<(std::ostream &os, const Angle &a) {
@@ -51,35 +100,22 @@ public:
   }
 };
 
-struct basic_cords {
-  float x;
-  float y;
-};
-
-struct Entity {
-  SDL_FRect position;
-  SDL_FRect Tposition;
-  bool gotoT = false;
-  SDL_Texture *texture;
-  SDL_Rect srcRect;
-  float speed;
-  Angle angle = 0;
-
-  basic_cords Central_position(std::optional<float> x = std::nullopt,
-                               std::optional<float> y = std::nullopt) {
-    if (x != std::nullopt) {
-      position.x = *x - position.w / 2;
-    }
-    if (y != std::nullopt) {
-      position.y = *y - position.h / 2;
-    }
-
-    return {position.x + position.w / 2, position.y + position.h / 2};
-  }
-};
-
 struct sdl_session {
   SDL_Window *window;
   SDL_Renderer *renderer;
 };
-#endif
+
+struct player_ship_type {
+  SDL_FRect rect;
+  SDL_FPoint gun_offset;
+  SDL_Texture *texture;
+};
+
+struct projectile {
+  SDL_FRect rect;
+  SDL_Texture *texture;
+  float speed;
+  Angle angle = 0;
+  bool guided;
+  SDL_FRect *target;
+};

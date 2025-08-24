@@ -3,3 +3,4 @@
 #include <SDL3/SDL_rect.h>
 SDL_FPoint find_dst_point_with_angle_and_distance(SDL_FPoint start, Angle angle,
                                                   float distance);
+int get_random_num(int min, int max);

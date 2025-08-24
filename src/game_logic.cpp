@@ -1,7 +1,10 @@
 #include "const.hpp"
+#include "enemies.hpp"
 #include "main.hpp"
+#include "meth.hpp"
 #include "projectiles.hpp"
 #include "types.hpp"
+#include <climits>
 #include <cstring>
 #include <vector>
 
@@ -37,7 +40,7 @@ bool play_level() {
 
   Uint8 player_ship_speed = 1;
   std::vector<projectile> projectiles;
-  std::vector<ship_type> enemies;
+  std::vector<enemy_type> enemies;
   while (running) {
     const Uint64 frameStart = SDL_GetTicksNS();
 
@@ -97,13 +100,25 @@ bool play_level() {
         projectiles.push_back(
             spawn_projectile({player_ship.rect.x + player_ship.gun_offset.x,
                               player_ship.rect.y + player_ship.gun_offset.y},
-                             1, 0, 3, "assets/basic_projectile.svg", nullptr));
+                             1, 90, NORMAL_PROJECTILE_SPEED,
+                             "assets/basic_projectile.svg", nullptr));
         last_fire = SDL_GetTicks();
       }
     }
 
+    // chance to spawn enemy every frame
+    if (get_random_num(0, 10) == 0) {
+      enemies.push_back(spawn_enemy(
+          //         static_cast<enemy_ai_type>(get_random_num(RANDOM, GUNNER)),
+          RANDOM, get_random_num(200, 1000)));
+    }
+
     SDL_SetRenderDrawColor(main_sdl_session.renderer, 0, 0, 0, 255);
     SDL_RenderClear(main_sdl_session.renderer);
+
+    for (enemy_type &e : enemies) {
+      step_enemy(e, player_ship, projectiles);
+    }
 
     for (projectile &p : projectiles) {
       if (p.rect.x > mode->w || p.rect.y > mode->h) {
@@ -133,4 +148,5 @@ bool play_level() {
   }
 
   SDL_DestroyTexture(player_ship.texture);
+  return true;
 }

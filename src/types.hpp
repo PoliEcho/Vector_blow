@@ -16,7 +16,6 @@ enum enemy_ai_type {
 struct Angle {
 private:
   float value{0};
-
   void normalize() {
     value = std::fmod(value, 360);
     if (value < 0)
@@ -24,77 +23,140 @@ private:
   }
 
 public:
-  // Constructor
-  Angle(int val = 0) : value(val) { normalize(); }
+  // Constructors
+  Angle(int val = 0) : value(static_cast<float>(val)) { normalize(); }
+  Angle(float val) : value(val) { normalize(); }
+  Angle(double val) : value(static_cast<float>(val)) { normalize(); }
 
-  // Assignment operator
+  // Assignment operators
   Angle &operator=(int val) {
+    value = static_cast<float>(val);
+    normalize();
+    return *this;
+  }
+
+  Angle &operator=(float val) {
     value = val;
+    normalize();
+    return *this;
+  }
+
+  Angle &operator=(double val) {
+    value = static_cast<float>(val);
     normalize();
     return *this;
   }
 
   // Compound assignment
   Angle &operator+=(int rhs) {
-    value += rhs;
+    value += static_cast<float>(rhs);
     normalize();
     return *this;
   }
 
   Angle &operator-=(int rhs) {
+    value -= static_cast<float>(rhs);
+    normalize();
+    return *this;
+  }
+
+  Angle &operator+=(float rhs) {
+    value += rhs;
+    normalize();
+    return *this;
+  }
+
+  Angle &operator-=(float rhs) {
     value -= rhs;
     normalize();
     return *this;
   }
+
   // Binary operators for int
   Angle operator+(int rhs) const {
-    return Angle(static_cast<int>(value) + rhs);
+    Angle result;
+    result.value = value + static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator-(int rhs) const {
-    return Angle(static_cast<int>(value) - rhs);
+    Angle result;
+    result.value = value - static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator*(int rhs) const {
-    return Angle(static_cast<int>(value * rhs));
+    Angle result;
+    result.value = value * static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator/(int rhs) const {
-    return Angle(static_cast<int>(value / rhs));
+    Angle result;
+    result.value = value / static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   // Binary operators for double
   Angle operator+(double rhs) const {
-    return Angle(static_cast<int>(value + rhs));
+    Angle result;
+    result.value = value + static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator-(double rhs) const {
-    return Angle(static_cast<int>(value - rhs));
+    Angle result;
+    result.value = value - static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator*(double rhs) const {
-    return Angle(static_cast<int>(value * rhs));
+    Angle result;
+    result.value = value * static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   Angle operator/(double rhs) const {
-    return Angle(static_cast<int>(value / rhs));
+    Angle result;
+    result.value = value / static_cast<float>(rhs);
+    result.normalize();
+    return result;
   }
 
   // Binary operators for float
   Angle operator+(float rhs) const {
-    return Angle(static_cast<int>(value + rhs));
+    Angle result;
+    result.value = value + rhs;
+    result.normalize();
+    return result;
   }
 
   Angle operator-(float rhs) const {
-    return Angle(static_cast<int>(value - rhs));
+    Angle result;
+    result.value = value - rhs;
+    result.normalize();
+    return result;
   }
 
   Angle operator*(float rhs) const {
-    return Angle(static_cast<int>(value * rhs));
+    Angle result;
+    result.value = value * rhs;
+    result.normalize();
+    return result;
   }
 
   Angle operator/(float rhs) const {
-    return Angle(static_cast<int>(value / rhs));
+    Angle result;
+    result.value = value / rhs;
+    result.normalize();
+    return result;
   }
 
   // Type conversion
@@ -124,6 +186,8 @@ struct enemy_type {
   enemy_ai_type type;
   Uint32 last_shot;
   Uint32 reload_time;
+  SDL_FPoint target;
+  float size_multiplier;
 };
 
 struct projectile {

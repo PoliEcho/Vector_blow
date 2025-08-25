@@ -5,6 +5,8 @@
 #include <cmath>
 #include <iostream>
 
+enum projectile_type { ALLY, FOE };
+
 enum enemy_ai_type {
   RANDOM,
   FLYER,
@@ -196,5 +198,6 @@ struct projectile {
   float speed;
   Angle angle = 0;
   bool guided;
+  projectile_type type;
   SDL_FRect *target;
 };

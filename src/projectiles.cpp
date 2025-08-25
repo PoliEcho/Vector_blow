@@ -13,11 +13,10 @@ void step_projectile(projectile p);
 
 projectile spawn_projectile(SDL_FPoint position, float size_multiplier,
                             Angle angle, float speed, char *texture_file_name,
-                            SDL_FRect *target) {
+                            SDL_FRect *target, projectile_type type) {
 
   projectile p;
-  p.texture =
-      texture_from_SVG_file("assets/basic_projectile.svg", size_multiplier);
+  p.texture = texture_from_SVG_file(texture_file_name, size_multiplier);
 
   p.angle = angle;
   p.rect = {position.x, position.y, static_cast<float>(p.texture->w),
@@ -30,6 +29,7 @@ projectile spawn_projectile(SDL_FPoint position, float size_multiplier,
     p.target = target;
     p.guided = true;
   }
+  p.type = type;
 
   return p;
 }

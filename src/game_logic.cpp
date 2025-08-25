@@ -6,16 +6,23 @@
 #include "projectiles.hpp"
 #include "text.hpp"
 #include "types.hpp"
+#include <SDL3/SDL_oldnames.h>
+#include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_scancode.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
+#include <array>
 #include <cstring>
-#include <print>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <vector>
+
+constexpr std::array<SDL_FPoint, 5> overheat_block = {
+    {{0.5f, 0.0f}, {1.0f, 0.0f}, {0.5f, 1.0f}, {0.0f, 1.0f}, {0.5f, 0.0f}},
+};
 
 // returns true on win and false on lose  and score
 std::tuple<Uint64, bool> play_level(float score_multiplyer) {
@@ -47,9 +54,10 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
   }();
   bool running = true;
   bool paused = false;
+  Uint8 overheat_counter = 0;
+  SDL_Color overheat_bar_color = {HEX_TO_SDL_COLOR(0xf78600ff)};
   Uint64 lastFrameTime = SDL_GetTicksNS();
   float deltaTime = 0.0f;
-
   Uint8 player_ship_speed = 1;
   std::vector<projectile> projectiles;
   std::vector<enemy_type> enemies;
@@ -59,6 +67,7 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
                          /*padding*/ 1),
       static_cast<float>(level_screen_limit.x + level_screen_limit.w),
       HEALTH_BAR_THICKNESS};
+  bool overheat_mode = false;
   while (running) {
     const Uint64 frameStart = SDL_GetTicksNS();
 
@@ -120,12 +129,15 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
           SDL_GetMouseState(nullptr, nullptr);
       static Uint32 last_fire = 0;
       if ((mousestate & SDL_BUTTON_LMASK || keystate[SDL_SCANCODE_SPACE]) &&
-          SDL_GetTicks() - last_fire > MIN_INPUT_DELAY_FIRE) {
+          SDL_GetTicks() - last_fire > MIN_INPUT_DELAY_FIRE && !overheat_mode) {
         projectiles.push_back(spawn_projectile(
             {player_ship.rect.x + player_ship.gun_offset.x,
              player_ship.rect.y + player_ship.gun_offset.y},
             1, 90, NORMAL_PROJECTILE_SPEED, "assets/basic_projectile.svg",
             nullptr, ALLY, player.damage));
+
+        overheat_counter += OVERHEAT_PER_SHOT;
+
         last_fire = SDL_GetTicks();
       }
     }
@@ -206,6 +218,51 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
                                        static_cast<float>(player.health)));
 
     SDL_RenderFillRect(main_sdl_session.renderer, &health_bar);
+
+    // render overheat bars
+    {
+      if (overheat_counter >= 100) {
+        overheat_mode = true;
+      }
+      SDL_SetRenderDrawColor(main_sdl_session.renderer,
+                             SDL_COLOR_RGBA(overheat_bar_color));
+      static Uint32 last_cooldown = 0;
+      if (overheat_counter > 0 &&
+          SDL_GetTicks() - last_cooldown > MIN_INPUT_DELAY_FIRE) {
+        overheat_counter -= OVERHEAT_PER_SHOT / 2;
+        last_cooldown = SDL_GetTicks();
+        if (overheat_mode) {
+          static bool overheat_color = true;
+          if (overheat_color) {
+            overheat_bar_color = {HEX_TO_SDL_COLOR(0xff0000ff)};
+            overheat_color = false;
+          } else {
+            overheat_bar_color = {HEX_TO_SDL_COLOR(0xf78600ff)};
+            overheat_color = true;
+          }
+        }
+      }
+
+      if (overheat_mode && overheat_counter < 50) {
+        overheat_bar_color = {HEX_TO_SDL_COLOR(0xf78600ff)};
+        overheat_mode = false;
+      }
+
+      std::remove_const_t<decltype(overheat_block)> overheat_block_sized{};
+      SDL_FPoint origin = {
+          static_cast<float>(level_screen_limit.x),
+          static_cast<float>(level_screen_limit.y + level_screen_limit.h + 2)};
+      for (Uint8 i = 0; i < overheat_counter / 10; i++) {
+        multiply_FPoint_array(
+            overheat_block_sized.data(), overheat_block.data(), origin,
+            (mode->h - (level_screen_limit.y + level_screen_limit.h)) - 3,
+            overheat_block.size());
+        SDL_RenderLines(main_sdl_session.renderer, overheat_block_sized.data(),
+                        overheat_block_sized.size());
+        origin.x +=
+            (mode->h - (level_screen_limit.y + level_screen_limit.h)) - 3;
+      }
+    }
 
     SDL_RenderPresent(main_sdl_session.renderer);
 

@@ -12,6 +12,7 @@
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
 #include <cstring>
+#include <print>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -42,7 +43,7 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
 
     SDL_FPoint gun_offset = {ship_width * 0.9f, ship_height * 0.9f};
 
-    return {player_ship_rect, gun_offset, player_ship_texture};
+    return {player_ship_rect, gun_offset, player_ship_texture, player.health};
   }();
   bool running = true;
   bool paused = false;
@@ -52,6 +53,12 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
   Uint8 player_ship_speed = 1;
   std::vector<projectile> projectiles;
   std::vector<enemy_type> enemies;
+  SDL_FRect health_bar = {
+      static_cast<float>(level_screen_limit.x),
+      static_cast<float>(level_screen_limit.y - HEALTH_BAR_THICKNESS -
+                         /*padding*/ 1),
+      static_cast<float>(level_screen_limit.x + level_screen_limit.w),
+      HEALTH_BAR_THICKNESS};
   while (running) {
     const Uint64 frameStart = SDL_GetTicksNS();
 
@@ -114,20 +121,20 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
       static Uint32 last_fire = 0;
       if ((mousestate & SDL_BUTTON_LMASK || keystate[SDL_SCANCODE_SPACE]) &&
           SDL_GetTicks() - last_fire > MIN_INPUT_DELAY_FIRE) {
-        projectiles.push_back(
-            spawn_projectile({player_ship.rect.x + player_ship.gun_offset.x,
-                              player_ship.rect.y + player_ship.gun_offset.y},
-                             1, 90, NORMAL_PROJECTILE_SPEED,
-                             "assets/basic_projectile.svg", nullptr, ALLY));
+        projectiles.push_back(spawn_projectile(
+            {player_ship.rect.x + player_ship.gun_offset.x,
+             player_ship.rect.y + player_ship.gun_offset.y},
+            1, 90, NORMAL_PROJECTILE_SPEED, "assets/basic_projectile.svg",
+            nullptr, ALLY, player.damage));
         last_fire = SDL_GetTicks();
       }
     }
 
     // chance to spawn enemy every frame
     if (get_random_num(0, 500) == 0) {
-      enemies.push_back(
-          spawn_enemy(static_cast<enemy_ai_type>(get_random_num(RANDOM, 1)),
-                      get_random_num(200, 1000)));
+      enemies.push_back(spawn_enemy(
+          static_cast<enemy_ai_type>(get_weighted_random(RANDOM, GUNNER)),
+          get_random_num(200, 1000), get_weighted_random_float(0.9f, 5)));
     }
 
     SDL_SetRenderDrawColor(main_sdl_session.renderer, 0, 0, 0, 255);
@@ -140,9 +147,12 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
         if (p.type == ALLY) {
           for (enemy_type &e : enemies) {
             if (SDL_HasRectIntersectionFloat(&p.rect, &e.ship.rect)) {
-              // TODO play explosion or something
-              score += ((e.type + 1) * 10) * score_multiplyer;
-              enemies.erase(enemies.begin() + (&e - enemies.data()));
+              e.ship.health -= p.damage;
+              if (e.ship.health <= 0) {
+                // TODO play explosion or something
+                score += ((e.type + 1) * 10) * score_multiplyer;
+                enemies.erase(enemies.begin() + (&e - enemies.data()));
+              }
               projectiles.erase(projectiles.begin() +
                                 (&p - projectiles.data()));
               goto skip_projectile_step;
@@ -151,7 +161,11 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
         } else {
           if (SDL_HasRectIntersectionFloat(&p.rect, &player_ship.rect)) {
             // TODO add hit points
-            return std::make_tuple(score, false);
+            player_ship.health -= p.damage;
+            if (player_ship.health <= 0) {
+              return std::make_tuple(score, false);
+            }
+            projectiles.erase(projectiles.begin() + (&p - projectiles.data()));
           }
         }
         step_projectile(p);
@@ -165,6 +179,7 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
     SDL_RenderTexture(main_sdl_session.renderer, player_ship.texture, nullptr,
                       &player_ship.rect);
 
+    // draw UI
     SDL_SetRenderDrawColor(
         main_sdl_session.renderer,
         HEX_TO_SDL_COLOR(0xffffffff)); // set white render color
@@ -182,6 +197,15 @@ std::tuple<Uint64, bool> play_level(float score_multiplyer) {
       std::string score_str = std::to_string(score);
       vector_print({5, 5}, level_screen_limit.y - 10, score_str);
     }
+
+    // render health bar
+    SDL_SetRenderDrawColor(main_sdl_session.renderer,
+                           HEX_TO_SDL_COLOR(0xff0000ff));
+    health_bar.w = static_cast<float>(level_screen_limit.w *
+                                      (static_cast<float>(player_ship.health) /
+                                       static_cast<float>(player.health)));
+
+    SDL_RenderFillRect(main_sdl_session.renderer, &health_bar);
 
     SDL_RenderPresent(main_sdl_session.renderer);
 

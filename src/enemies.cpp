@@ -8,9 +8,10 @@
 #include <SDL3/SDL_render.h>
 #include <vector>
 
-enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time) {
+enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
+                       float multiplier) {
   enemy_type enemy;
-  enemy.ship.texture = texture_from_SVG_file("assets/enemy_1.svg", 1);
+  enemy.ship.texture = texture_from_SVG_file("assets/enemy_1.svg", multiplier);
   enemy.type = ai_type;
   enemy.reload_time = reload_time;
 
@@ -24,7 +25,8 @@ enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time) {
 
   enemy.ship.gun_offset.x = 0;
   enemy.ship.gun_offset.y = 0.5f * enemy.ship.texture->h;
-  enemy.size_multiplier = 1;
+  enemy.size_multiplier = multiplier;
+  enemy.ship.health = multiplier * BASE_PROJECTILE_DAMAGE;
 
   if (ai_type == FLYER) {
     enemy.target = {(level_screen_limit.x + level_screen_limit.w) -
@@ -65,7 +67,8 @@ void step_enemy(enemy_type &e, ship_type &player,
           spawn_projectile({e.ship.rect.x + e.ship.gun_offset.x,
                             e.ship.rect.y + e.ship.gun_offset.y},
                            e.size_multiplier, 270, NORMAL_PROJECTILE_SPEED,
-                           "assets/basic_projectile.svg", nullptr, FOE));
+                           "assets/basic_projectile.svg", nullptr, FOE,
+                           BASE_PROJECTILE_DAMAGE * e.size_multiplier));
     }
     break;
   case FLYER: {
@@ -103,12 +106,26 @@ void step_enemy(enemy_type &e, ship_type &player,
           spawn_projectile({e.ship.rect.x + e.ship.gun_offset.x,
                             e.ship.rect.y + e.ship.gun_offset.y},
                            e.size_multiplier, 270, NORMAL_PROJECTILE_SPEED,
-                           "assets/basic_projectile.svg", nullptr, FOE));
+                           "assets/basic_projectile.svg", nullptr, FOE,
+                           BASE_PROJECTILE_DAMAGE * e.size_multiplier));
       e.last_shot = SDL_GetTicks();
     }
   } break;
 
   case GUNNER:
+    e.ship.rect.y = player.rect.y + (player.rect.h / 2);
+    e.ship.rect.x--;
+
+    if (get_random_num(0, 250) == 0 &&
+        SDL_GetTicks() - e.last_shot > e.reload_time) {
+      projectiles.push_back(
+          spawn_projectile({e.ship.rect.x + e.ship.gun_offset.x,
+                            e.ship.rect.y + e.ship.gun_offset.y},
+                           e.size_multiplier, 270, NORMAL_PROJECTILE_SPEED,
+                           "assets/basic_projectile.svg", nullptr, FOE,
+                           BASE_PROJECTILE_DAMAGE * e.size_multiplier));
+    }
+
     break;
   case ACE:
     break;

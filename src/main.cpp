@@ -19,6 +19,8 @@ const SDL_DisplayMode *mode;
 
 SDL_Rect level_screen_limit;
 
+player_type player = {100, 10};
+
 int main(int argc, char *argv[]) {
   SDL_Init(SDL_INIT_VIDEO);
 

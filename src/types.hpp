@@ -181,6 +181,7 @@ struct ship_type {
   SDL_FRect rect;
   SDL_FPoint gun_offset;
   SDL_Texture *texture;
+  int health;
 };
 
 struct enemy_type {
@@ -200,4 +201,10 @@ struct projectile {
   bool guided;
   projectile_type type;
   SDL_FRect *target;
+  int damage;
+};
+
+struct player_type {
+  int health;
+  int damage;
 };

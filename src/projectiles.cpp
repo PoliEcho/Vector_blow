@@ -8,12 +8,12 @@
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_surface.h>
 #include <SDL3_image/SDL_image.h>
-#include <array>
 void step_projectile(projectile p);
 
 projectile spawn_projectile(SDL_FPoint position, float size_multiplier,
                             Angle angle, float speed, char *texture_file_name,
-                            SDL_FRect *target, projectile_type type) {
+                            SDL_FRect *target, projectile_type type,
+                            int damage) {
 
   projectile p;
   p.texture = texture_from_SVG_file(texture_file_name, size_multiplier);
@@ -30,6 +30,7 @@ projectile spawn_projectile(SDL_FPoint position, float size_multiplier,
     p.guided = true;
   }
   p.type = type;
+  p.damage = damage;
 
   return p;
 }

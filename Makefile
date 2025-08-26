@@ -1,5 +1,5 @@
 CPPC = g++
-COMMON_CPPC_FLAGS = -std=c++23 -Wall -Wextra -lSDL3 -lSDL3_image `pkg-config --cflags --libs sdl3` -Wno-write-strings
+COMMON_CPPC_FLAGS = -std=c++23 -Wall -Wextra -lSDL3 -lSDL3_image `pkg-config --cflags --libs sdl3` -Wno-write-strings -Wsuggest-attribute=const
 CPPC_FLAGS = -O3 $(COMMON_CPPC_FLAGS)
 DEBUG_FLAGS = -ggdb $(COMMON_CPPC_FLAGS)
 DEBUG_ASANITIZE = -fsanitize=address -ggdb -fno-omit-frame-pointer $(COMMON_CPPC_FLAGS)

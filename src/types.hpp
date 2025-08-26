@@ -21,6 +21,7 @@ enum powerup_efect_type {
   TWO_X,
   BOOM,
   THREE_X,
+  HEALTH,
   BEAM,
   FIVE_X,
 };

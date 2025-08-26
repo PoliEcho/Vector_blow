@@ -3,10 +3,12 @@
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
 #include <SDL3/SDL_timer.h>
-constexpr char *powerup_filenames[5] = {
-    "assets/powerups/2x.svg", "assets/powerups/boom.svg",
-    "assets/powerups/3x.svg", "assets/powerups/beam.svg",
-    "assets/powerups/5x.svg"};
+constexpr char *powerup_filenames[] = {[TWO_X] = "assets/powerups/2x.svg",
+                                       [BOOM] = "assets/powerups/boom.svg",
+                                       [THREE_X] = "assets/powerups/3x.svg",
+                                       [HEALTH] = "assets/powerups/health.svg",
+                                       [BEAM] = "assets/powerups/beam.svg",
+                                       [FIVE_X] = "assets/powerups/5x.svg"};
 
 powerup_type summon_powerup(SDL_FPoint pos, powerup_efect_type type) {
   powerup_type powerup;

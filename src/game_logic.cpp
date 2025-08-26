@@ -7,6 +7,7 @@
 #include "projectiles.hpp"
 #include "text.hpp"
 #include "types.hpp"
+#include <SDL3/SDL_keyboard.h>
 #include <SDL3/SDL_oldnames.h>
 #include <SDL3/SDL_pixels.h>
 #include <SDL3/SDL_rect.h>
@@ -16,7 +17,9 @@
 #include <SDL3/SDL_time.h>
 #include <SDL3/SDL_timer.h>
 #include <array>
+#include <cstdlib>
 #include <cstring>
+#include <format>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -26,7 +29,8 @@ constexpr std::array<SDL_FPoint, 5> overheat_block = {
 };
 
 // returns true on win and false on lose  and score
-std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
+std::tuple<Uint64, bool, bool>
+play_level(const float initial_score_multiplyer) {
   Uint64 score = 0;
   ship_type player_ship = []() -> ship_type {
     SDL_Texture *player_ship_texture = nullptr;
@@ -88,29 +92,29 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
 
       switch (ap.type) {
       case TWO_X:
-        score_multiplyer *= 2;
+        score_multiplyer += 2;
         break;
       case BOOM:
         calculated_damage *= 3;
         break;
       case THREE_X:
-        score_multiplyer *= 3;
+        score_multiplyer += 3;
         break;
       case BEAM:
         fire_delay /= 5;
         cooldown_per_shot *= 5;
         break;
       case FIVE_X:
-        score_multiplyer *= 5;
+        score_multiplyer += 5;
+        break;
+      case HEALTH:
+        player_ship.health += player.health / 2;
+        ap.activation_tick = 0;
         break;
       }
       if (SDL_GetTicks() - ap.activation_tick > DEFAULT_POWERUP_DURATION) {
         active_powerups.erase(active_powerups.begin() +
                               (&ap - active_powerups.data()));
-        // DEBUG
-        SDL_Time time;
-        SDL_GetCurrentTime(&time);
-        std::clog << "[DEBUG] " << "poweroup deleted at " << time << "\n";
       }
     }
 
@@ -197,6 +201,7 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
 
     for (projectile &p : projectiles) {
       if (p.rect.x > mode->w || p.rect.y > mode->h) {
+        SDL_DestroyTexture(p.texture);
         projectiles.erase(projectiles.begin() + (&p - projectiles.data()));
       } else {
         if (p.type == ALLY) {
@@ -214,8 +219,10 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
                           get_weighted_random(powerup_efect_type::TWO_X,
                                               powerup_efect_type::FIVE_X))));
                 }
+                SDL_DestroyTexture(e.ship.texture);
                 enemies.erase(enemies.begin() + (&e - enemies.data()));
               }
+              SDL_DestroyTexture(p.texture);
               projectiles.erase(projectiles.begin() +
                                 (&p - projectiles.data()));
               goto skip_projectile_step;
@@ -225,8 +232,9 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
           if (SDL_HasRectIntersectionFloat(&p.rect, &player_ship.rect)) {
             player_ship.health -= p.damage;
             if (player_ship.health <= 0) {
-              return std::make_tuple(score, false);
+              running = false;
             }
+            SDL_DestroyTexture(p.texture);
             projectiles.erase(projectiles.begin() + (&p - projectiles.data()));
           }
         }
@@ -235,16 +243,17 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
       }
     }
     for (enemy_type &e : enemies) {
-      step_enemy(e, player_ship, projectiles);
+      if (e.ship.rect.x + e.ship.rect.w < level_screen_limit.x) {
+        SDL_DestroyTexture(e.ship.texture);
+        enemies.erase(enemies.begin() + (&e - enemies.data()));
+      } else {
+        step_enemy(e, player_ship, projectiles);
+      }
     }
     // process powerups
     for (powerup_type &pu : powerups) {
       if (SDL_HasRectIntersectionFloat(&player_ship.rect, &pu.rect)) {
         active_powerups.push_back({pu.type, SDL_GetTicks()});
-        // DEBUG
-        SDL_Time time;
-        SDL_GetCurrentTime(&time);
-        std::clog << "[DEBUG] " << "poweroup got at " << time << "\n";
         goto erase_powerup;
       } else {
         if (SDL_GetTicks() - pu.spawn_tick < POWERUP_LIFE_TIME) {
@@ -252,6 +261,7 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
                             &pu.rect);
         } else {
         erase_powerup:
+          SDL_DestroyTexture(pu.texture);
           powerups.erase(powerups.begin() + (&pu - powerups.data()));
         }
       }
@@ -334,9 +344,86 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
 
     SDL_RenderPresent(main_sdl_session.renderer);
 
-    enemy_spawn_rate *=
-        0.99995f; // increase enemy spawn rate reaches peak in about 30mins
+    if (enemy_spawn_rate > 5) {
+      enemy_spawn_rate -=
+          0.0023f; // increase enemy spawn rate reaches peak in about 20mins
+    }
 
+    const Uint64 frameTime = SDL_GetTicksNS() - frameStart;
+    if (frameTime < TARGET_FRAME_TIME_NS) {
+      const Uint64 sleepTime = TARGET_FRAME_TIME_NS - frameTime;
+      if (sleepTime >= 2'000'000) {
+        SDL_DelayNS(sleepTime - 2'000'000);
+      }
+      while (SDL_GetTicksNS() - frameStart < TARGET_FRAME_TIME_NS) {
+      }
+    }
+
+    deltaTime = (SDL_GetTicksNS() - lastFrameTime) / 1e9f;
+    lastFrameTime = SDL_GetTicksNS();
+  }
+  {
+
+    const std::string score_str =
+        std::format("you score was: {}, good job", score);
+    const Uint64 text_height = mode->h / LOSE_TEXT_HEIGHT_DEVIDER;
+    Uint64 max_text_width = TEXT_WIDTH(score_str, text_height);
+
+    SDL_FRect lose_rect = {
+        static_cast<float>((mode->w / 2) - max_text_width / 2),
+        static_cast<float>((mode->h / 2) -
+                           (text_height * (ARRAY_LENGHT(lose_text) + 2))),
+        static_cast<float>(max_text_width + text_height),
+        static_cast<float>(text_height * (ARRAY_LENGHT(lose_text) + 4))};
+
+    SDL_SetRenderDrawColor(main_sdl_session.renderer, 0, 0, 0, 255);
+
+    SDL_RenderFillRect(main_sdl_session.renderer, &lose_rect);
+
+    SDL_SetRenderDrawColor(
+        main_sdl_session.renderer,
+        HEX_TO_SDL_COLOR(0xffffffff)); // set white render color
+
+    SDL_RenderRect(main_sdl_session.renderer, &lose_rect);
+
+    vector_print(
+        {lose_rect.x + (text_height / 2), lose_rect.y + (text_height / 2)},
+        text_height, score_str);
+    int y_offset =
+        (lose_rect.y + (text_height / 2)) + text_height + (text_height / 2);
+    for (Uint8 i = 0; i < ARRAY_LENGHT(lose_text); i++) {
+      vector_print({((lose_rect.x + (lose_rect.w / 2)) -
+                     (TEXT_WIDTH(std::string(lose_text[i]), text_height) / 2)),
+                    static_cast<float>(y_offset)},
+                   text_height, lose_text[i]);
+      y_offset += text_height + (text_height / 2);
+    }
+    SDL_RenderPresent(main_sdl_session.renderer);
+  }
+  bool play_again;
+  SDL_Delay(3000);
+  SDL_ResetKeyboard();
+  while (true) {
+    const Uint64 frameStart = SDL_GetTicksNS();
+
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+      switch (event.type) {
+      case SDL_EVENT_QUIT:
+        std::exit(1);
+      default:
+        break;
+      }
+    }
+    const bool *keystate = SDL_GetKeyboardState(NULL);
+    if (keystate[SDL_SCANCODE_SPACE]) {
+      play_again = true;
+      break;
+    }
+    if (keystate[SDL_SCANCODE_Q]) {
+      play_again = false;
+      break;
+    }
     const Uint64 frameTime = SDL_GetTicksNS() - frameStart;
     if (frameTime < TARGET_FRAME_TIME_NS) {
       const Uint64 sleepTime = TARGET_FRAME_TIME_NS - frameTime;
@@ -352,5 +439,5 @@ std::tuple<Uint64, bool> play_level(const float initial_score_multiplyer) {
   }
 
   SDL_DestroyTexture(player_ship.texture);
-  return std::make_tuple(score, true);
+  return std::make_tuple(score, true, play_again);
 }

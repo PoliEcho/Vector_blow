@@ -1,6 +1,6 @@
 #pragma once
 #include <SDL3/SDL_stdinc.h>
-#include <string>
+#include <format>
 
 constexpr int SCREEN_WIDTH = 1600;
 constexpr int SCREEN_HEIGHT = 1200;
@@ -10,6 +10,8 @@ constexpr int TARGET_FPS = 120;
 constexpr Uint64 TARGET_FRAME_TIME_NS = 1'000'000'000 / TARGET_FPS;
 constexpr char program_name[] = "Vector blow";
 constexpr char any_key[] = "Press any SPACE bars you may have to start";
+constexpr char *lose_text[] = {"You ship was destroyed",
+                               "press SPACE to play again", "press q to quit"};
 
 #define WIDTH_RATIO 15
 #define HEIGHT_RATIO 41.53846153846154
@@ -23,3 +25,4 @@ constexpr char any_key[] = "Press any SPACE bars you may have to start";
 #define ANY_KEY_BLINK_DELAY 1000
 #define POWERUP_LIFE_TIME 15000
 #define DEFAULT_POWERUP_DURATION 15000
+#define LOSE_TEXT_HEIGHT_DEVIDER 45

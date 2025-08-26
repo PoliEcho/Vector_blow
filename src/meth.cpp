@@ -2,8 +2,9 @@
 #include <cmath>
 #include <random>
 
-SDL_FPoint find_dst_point_with_angle_and_distance(SDL_FPoint start, Angle angle,
-                                                  float distance) {
+const SDL_FPoint find_dst_point_with_angle_and_distance(SDL_FPoint start,
+                                                        Angle angle,
+                                                        float distance) {
   float angle_degrees = static_cast<float>(angle);
   float angle_rad = (angle_degrees - 90.0f) * M_PI / 180.0f;
 

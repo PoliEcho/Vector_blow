@@ -105,9 +105,12 @@ int main(int argc, char *argv[]) {
   }
 
   {
-    auto [score, win] = play_level(1);
-    std::cout << "you got score: " << score
-              << " and you: " << (win ? "WON" : "LOST") << "\n";
+    while (true) {
+      auto [score, win, play_again] = play_level(1);
+      if (!play_again) {
+        break;
+      }
+    }
   }
 
 end_program:

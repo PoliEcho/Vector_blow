@@ -11,3 +11,6 @@
 #define SDL_COLOR_RGBA(color) (color).r, (color).g, (color).b, (color).a
 
 #define ARRAY_LENGHT(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+#define TEXT_WIDTH(text, height)                                               \
+  ((text).length() * ((height) + (height) / 6.0f))

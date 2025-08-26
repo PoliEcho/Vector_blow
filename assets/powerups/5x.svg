@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="61.384998"
+   height="61.424"
+   viewBox="0 0 61.384998 61.423997"
+   sodipodi:docname="5x.svg"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#000000"
+     bordercolor="#999999"
+     borderopacity="1"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="8.8783041"
+     inkscape:cx="38.633505"
+     inkscape:cy="38.689822"
+     inkscape:window-width="1918"
+     inkscape:window-height="1038"
+     inkscape:window-x="0"
+     inkscape:window-y="20"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g1">
+    <inkscape:page
+       x="0"
+       y="0"
+       inkscape:label="1"
+       id="page1"
+       width="61.384998"
+       height="61.423996"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <g
+     id="g1"
+     inkscape:groupmode="layer"
+     inkscape:label="1">
+    <g
+       id="g8"
+       transform="translate(-367.83638,-528.71804)">
+      <path
+         id="path2"
+         d="m 97,140.5 h 16"
+         style="fill:none;stroke:#ffffff;stroke-width:0.15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path3"
+         d="m 113,140.5 v 16"
+         style="fill:none;stroke:#ffffff;stroke-width:0.15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path4"
+         d="M 113,156.5 H 97"
+         style="fill:none;stroke:#ffffff;stroke-width:0.15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path5"
+         d="m 97,156.5 v -16"
+         style="fill:none;stroke:#ffffff;stroke-width:0.15;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path6"
+         d="m 97,148.5 8,8"
+         style="fill:none;stroke:#ffffff;stroke-width:0.25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path7"
+         d="m 97,140.5 16,16"
+         style="fill:none;stroke:#ffffff;stroke-width:0.25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+      <path
+         id="path8"
+         d="m 105,140.5 8,8"
+         style="fill:none;stroke:#ffffff;stroke-width:0.25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1"
+         transform="matrix(3.7775238,0,0,-3.7799327,1.8887619,1120.75)" />
+    </g>
+  </g>
+</svg>

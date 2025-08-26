@@ -1,6 +1,8 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_rect.h>
+#include <SDL3/SDL_render.h>
+#include <SDL3/SDL_stdinc.h>
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
 #include <iostream>
@@ -13,6 +15,14 @@ enum enemy_ai_type {
   GUNNER,
   ACE,
   BOSS,
+};
+
+enum powerup_efect_type {
+  TWO_X,
+  BOOM,
+  THREE_X,
+  BEAM,
+  FIVE_X,
 };
 
 struct Angle {
@@ -207,4 +217,16 @@ struct projectile {
 struct player_type {
   int health;
   int damage;
+};
+
+struct powerup_type {
+  SDL_FRect rect;
+  SDL_Texture *texture;
+  powerup_efect_type type;
+  Uint32 spawn_tick;
+};
+
+struct active_powerup {
+  powerup_efect_type type;
+  Uint64 activation_tick;
 };

@@ -9,3 +9,5 @@
   (atan2(((p2).y - (p1).y), ((p2).x - (p1).x)) * 180.0 / M_PI)
 
 #define SDL_COLOR_RGBA(color) (color).r, (color).g, (color).b, (color).a
+
+#define ARRAY_LENGHT(arr) (sizeof(arr) / sizeof((arr)[0]))

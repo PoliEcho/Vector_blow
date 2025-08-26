@@ -113,7 +113,7 @@ void step_enemy(enemy_type &e, ship_type &player,
   } break;
 
   case GUNNER:
-    e.ship.rect.y = player.rect.y + (player.rect.h / 2);
+    e.ship.rect.y = (player.rect.y + (player.rect.h / 2)) - e.ship.rect.h / 2;
     e.ship.rect.x--;
 
     if (get_random_num(0, 250) == 0 &&

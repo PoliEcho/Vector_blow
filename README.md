@@ -18,6 +18,7 @@ you will still need to install folowing dependencies:
 
 > [!CAUTION]  
 > copy downloaded binary to root of cloned repo otherwise it wont work  
+> you need the assets folder  
 
 
 ### how to build  

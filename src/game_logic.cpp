@@ -1,5 +1,6 @@
 #include "const.hpp"
 #include "enemies.hpp"
+#include "highscore.hpp"
 #include "macro.hpp"
 #include "main.hpp"
 #include "meth.hpp"
@@ -363,9 +364,13 @@ play_level(const float initial_score_multiplyer) {
     lastFrameTime = SDL_GetTicksNS();
   }
   {
-
+    std::string highscore_str = "";
+    if (score > get_highscore()) {
+      set_highscore(score);
+      highscore_str = "NEW HIGHSCORE";
+    }
     const std::string score_str =
-        std::format("you score was: {}, good job", score);
+        std::format("you score was: {} {} good job", score, highscore_str);
     const Uint64 text_height = mode->h / LOSE_TEXT_HEIGHT_DEVIDER;
     Uint64 max_text_width = TEXT_WIDTH(score_str, text_height);
 
@@ -401,7 +406,7 @@ play_level(const float initial_score_multiplyer) {
     SDL_RenderPresent(main_sdl_session.renderer);
   }
   bool play_again;
-  SDL_Delay(3000);
+  SDL_Delay(1500);
   SDL_ResetKeyboard();
   while (true) {
     const Uint64 frameStart = SDL_GetTicksNS();

@@ -1,0 +1,28 @@
+name: Build on macOS
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install gcc sdl3 sdl3_image pkg-config
+        
+    - name: Set up compiler
+      run: |
+        GCC_VERSION=$(brew list --versions gcc | grep -o '[0-9]\+' | head -1)
+        echo "CPPC=g++-$GCC_VERSION" >> $GITHUB_ENV
+        
+    - name: Build
+      run: make -j$(sysctl -n hw.ncpu)

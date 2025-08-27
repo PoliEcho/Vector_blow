@@ -6,6 +6,7 @@
 #include "types.hpp"
 #include <SDL3/SDL_rect.h>
 #include <SDL3/SDL_render.h>
+#include <SDL3/SDL_timer.h>
 #include <vector>
 
 enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
@@ -38,7 +39,7 @@ enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
   return enemy;
 }
 
-void step_enemy(enemy_type &e, ship_type &player,
+void step_enemy(enemy_type &e, ship_type &player_ship,
                 std::vector<projectile> &projectiles) {
   switch (e.type) {
   case RANDOM:
@@ -82,9 +83,9 @@ void step_enemy(enemy_type &e, ship_type &player,
 
     e.target.x -= horizontal_speed;
     float tolerance = 5.0f;
-    bool reached_target = std::abs(e.ship.rect.y - e.target.y) <= tolerance;
 
-    if (reached_target) {
+    // chaeck if target is reached
+    if (std::abs(e.ship.rect.y - e.target.y) <= tolerance) {
 
       if (e.target.y <= level_screen_limit.y + tolerance) {
 
@@ -113,7 +114,8 @@ void step_enemy(enemy_type &e, ship_type &player,
   } break;
 
   case GUNNER:
-    e.ship.rect.y = (player.rect.y + (player.rect.h / 2)) - e.ship.rect.h / 2;
+    e.ship.rect.y =
+        (player_ship.rect.y + (player_ship.rect.h / 2)) - e.ship.rect.h / 2;
     e.ship.rect.x--;
 
     if (get_random_num(0, 250) == 0 &&
@@ -127,8 +129,74 @@ void step_enemy(enemy_type &e, ship_type &player,
     }
 
     break;
-  case ACE:
-    break;
+  case ACE: {
+    if ((player_ship.rect.y + player_ship.rect.h >
+         e.ship.rect.y + e.ship.gun_offset.y) &&
+        (e.ship.rect.y + e.ship.gun_offset.y > player_ship.rect.y)) {
+      if (SDL_GetTicks() - e.last_shot > e.reload_time) {
+        projectiles.push_back(
+            spawn_projectile({e.ship.rect.x + e.ship.gun_offset.x,
+                              e.ship.rect.y + e.ship.gun_offset.y},
+                             e.size_multiplier, 270, NORMAL_PROJECTILE_SPEED,
+                             "assets/basic_projectile.svg", nullptr, FOE,
+                             BASE_PROJECTILE_DAMAGE * e.size_multiplier));
+        e.last_shot = SDL_GetTicks();
+      }
+    }
+    SDL_FRect dont_be_in_rect = {0, e.ship.rect.y, static_cast<float>(mode->w),
+                                 0};
+    {
+      SDL_FRect e_rect_dup = e.ship.rect;
+      e_rect_dup.x = 0;
+      for (projectile &p : projectiles) {
+        if (p.type == ALLY) {
+          SDL_FRect p_rect_dup = p.rect;
+          p_rect_dup.x = 0;
+          if (SDL_HasRectIntersectionFloat(&e_rect_dup, &p_rect_dup)) {
+            if (p_rect_dup.y < dont_be_in_rect.y) {
+              dont_be_in_rect.y = p_rect_dup.y;
+            }
+            if (p_rect_dup.y + p_rect_dup.h >
+                dont_be_in_rect.y + dont_be_in_rect.h) {
+              dont_be_in_rect.h = p_rect_dup.y + p_rect_dup.h -
+                                  dont_be_in_rect.y + dont_be_in_rect.h;
+            }
+          }
+        }
+      }
+    }
+
+    if (dont_be_in_rect.h != 0 &&
+        SDL_HasRectIntersectionFloat(&e.ship.rect, &dont_be_in_rect)) {
+      float up_y = (e.ship.rect.y - (dont_be_in_rect.y + dont_be_in_rect.h -
+                                     e.ship.rect.y + e.ship.rect.h)) -
+                   1;
+      float down_y = (dont_be_in_rect.y + dont_be_in_rect.h) + 1;
+
+      if (std::abs(e.ship.rect.y - up_y) < std::abs(down_y - e.ship.rect.y)) {
+        if (up_y < level_screen_limit.y) {
+          goto go_down;
+        }
+      go_up:
+        e.ship.rect.y--;
+      } else {
+        if (down_y + e.ship.rect.h >
+            level_screen_limit.y + level_screen_limit.h) {
+          goto go_up;
+        }
+      go_down:
+        e.ship.rect.y++;
+      }
+    } else {
+
+      e.ship.rect.y < (player_ship.rect.y + (player_ship.rect.h / 2)) -
+                          e.ship.rect.h / 2
+          ? e.ship.rect.y++
+          : e.ship.rect.y--;
+    }
+    e.ship.rect.x--;
+
+  } break;
   case BOSS:
     break;
   }

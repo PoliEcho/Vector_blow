@@ -28,7 +28,7 @@ run:
 make -j
 ```
 
-#### to cross compile
+#### to Windows cross compile
 #### you will need:
 > x86_64-w64-mingw32  
 > other dependencies mxe will tell you to install  
@@ -36,4 +36,44 @@ make -j
 git submodule --init
 cd mxe
 make MXE_TARGETS='x86_64-w64-mingw32.static' sdl3 sdl3_image
+cd ..
+make win_cross
 ```
+
+## Gameplay  
+
+### shooting  
+press SPACE to shoot
+while you shoot overheat meter in bottom left starts to fill up
+if it fills up you have to wait to reach half before you can shoot again
+</br></br></br>
+
+> [!NOTE]
+> enemies and powerups are sorted in order of likeliness of apperence so for example you will see RANDOM ememy 3 times more likely than ACE, same with power ups
+
+### enemies 
+> [!NOTE]
+> enemies give increasing number of points based on there size and type
+
+<img src="assets/enemy_1.svg" alt="enemy sprite" height="100" /></br>
+| type | behavior |
+|------|----------|
+| RANDOM | randomly moves and fires forward speed is 2x in comparison to other directions |
+| FLYER | on average faster firerate, moves up and down on screen and shoot providing cover fire for other units |
+| GUNNER | this enemy will lock on you ships signature and always stays drectly in front of the player and randomly fire |
+| ACE | this enemy will always fire if it sees the player in front of it, also it will attempt to doge player's shots, if not evading player's projectiles, it will attempt to get into fire position |
+| BOSS | NOT IMPLEMENTED |
+
+### power ups  
+
+> [!NOTE]
+> powerups generaly last 15s
+
+| visual | type | efect |
+|--------|------|-------|
+| ![2x](assets/powerups/2x.svg) | 2x | increase score multiplier by 2 |
+| ![boom](assets/powerups/boom.svg) | boom | multiply projectile damage by 3 |
+| ![3x](assets/powerups/3x.svg) | 3x | increase score multiplier by 3 |
+| ![health](assets/powerups/health.svg) | health | restores half of health |
+| ![beam](assets/powerups/beam.svg) | beam | devides fire cooldown by 5 and disables weapon overheat |
+| ![5x](assets/powerups/5x.svg) | 5x | increase score multiplier by 5 |

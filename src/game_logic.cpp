@@ -155,7 +155,7 @@ play_level(const float initial_score_multiplyer) {
           (SDL_GetTicks() - last_toggle_direction[2] >
            MIN_INPUT_DELAY_MOVEMENT)) {
         if (player_ship.rect.x + player_ship.rect.w < mode->w) {
-          player_ship.rect.x += player_ship_speed;
+          player_ship.rect.x += player_ship_speed * 2;
         }
         last_toggle_direction[2] = SDL_GetTicks();
       }
@@ -163,7 +163,7 @@ play_level(const float initial_score_multiplyer) {
           (SDL_GetTicks() - last_toggle_direction[3] >
            MIN_INPUT_DELAY_MOVEMENT)) {
         if (player_ship.rect.x > 0) {
-          player_ship.rect.x -= player_ship_speed;
+          player_ship.rect.x -= player_ship_speed * 2;
         }
         last_toggle_direction[3] = SDL_GetTicks();
       }
@@ -193,7 +193,7 @@ play_level(const float initial_score_multiplyer) {
     // chance to spawn enemy every frame
     if (get_random_num(0, enemy_spawn_rate) == 0) {
       enemies.push_back(spawn_enemy(
-          static_cast<enemy_ai_type>(get_weighted_random(RANDOM, GUNNER)),
+          static_cast<enemy_ai_type>(get_weighted_random(RANDOM, ACE)),
           get_random_num(200, 1000), get_weighted_random_float(0.9f, 5)));
     }
 
@@ -213,7 +213,7 @@ play_level(const float initial_score_multiplyer) {
                 // TODO play explosion or something
                 score += (((e.type + 1) * 10) * e.size_multiplier) *
                          score_multiplyer;
-                if (get_random_num(0, 20 / e.size_multiplier) == 0) {
+                if (get_random_num(0, 15 / e.size_multiplier) == 0) {
                   powerups.push_back(summon_powerup(
                       {e.ship.rect.x, e.ship.rect.y},
                       static_cast<powerup_efect_type>(

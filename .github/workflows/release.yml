@@ -2,8 +2,6 @@ name: Build and Release on macOS
 
 on:
   push:
-    branches: [ master ]
-  push:
     tags:
       - 'v*'
 

@@ -1,0 +1,56 @@
+name: Build and Release on macOS
+
+on:
+  push:
+    branches: [ master ]
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        brew update
+        brew install gcc sdl3 sdl3_image pkg-config
+
+    - name: Set up compiler
+      run: |
+        GCC_VERSION=$(brew list --versions gcc | grep -o '[0-9]\+' | head -1)
+        echo "CPPC=g++-$GCC_VERSION" >> $GITHUB_ENV
+
+    - name: Build
+      run: make -j$(sysctl -n hw.ncpu)
+
+    - name: Upload binary artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: vector-blow-macos
+        path: ./build/bin/Vector_blow
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download binary artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: vector-blow-macos
+
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: Vector_blow
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

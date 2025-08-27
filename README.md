@@ -55,7 +55,7 @@ if it fills up you have to wait to reach half before you can shoot again
 > [!NOTE]
 > enemies give increasing number of points based on there size and type
 
-<img src="assets/enemy_1.svg" alt="enemy sprite" height="100" /></br>
+<img src="assets/enemy_1.svg" alt="enemy sprite" width=200 /></br>
 | type | behavior |
 |------|----------|
 | RANDOM | randomly moves and fires forward speed is 2x in comparison to other directions |

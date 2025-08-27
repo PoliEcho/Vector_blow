@@ -64,7 +64,7 @@ play_level(const float initial_score_multiplyer) {
   SDL_Color overheat_bar_color = {HEX_TO_SDL_COLOR(0xf78600ff)};
   Uint64 lastFrameTime = SDL_GetTicksNS();
   float deltaTime = 0.0f;
-  Uint8 player_ship_speed = 1;
+  constexpr Uint8 player_ship_speed = 1;
   std::vector<projectile> projectiles;
   std::vector<enemy_type> enemies;
   std::vector<powerup_type> powerups;
@@ -81,9 +81,14 @@ play_level(const float initial_score_multiplyer) {
   Uint32 fire_delay;
   float cooldown_per_shot;
   double enemy_spawn_rate = 500;
+  Uint16 boss_count = 1;
+  std::array<bool, 2> boss_mode = {false, false};
   while (running) {
     const Uint64 frameStart = SDL_GetTicksNS();
 
+    if (score >= BOSS_POINTS_APPEAR * boss_count) {
+      boss_mode[0] = true;
+    }
     // calculate powerup effects
     score_multiplyer = initial_score_multiplyer;
     calculated_damage = player.damage;
@@ -191,10 +196,24 @@ play_level(const float initial_score_multiplyer) {
     }
 
     // chance to spawn enemy every frame
-    if (get_random_num(0, enemy_spawn_rate) == 0) {
-      enemies.push_back(spawn_enemy(
-          static_cast<enemy_ai_type>(get_weighted_random(RANDOM, ACE)),
-          get_random_num(200, 1000), get_weighted_random_float(0.9f, 5)));
+    if (!boss_mode[0]) {
+      if (get_random_num(0, enemy_spawn_rate) == 0) {
+        enemies.push_back(spawn_enemy(
+            static_cast<enemy_ai_type>(get_weighted_random(RANDOM, ACE)),
+            get_random_num(200, 1000), get_weighted_random_float(0.9f, 5)));
+      }
+    } else if (boss_mode[1]) {
+      if (get_random_num(0, enemy_spawn_rate * 3) == 0) {
+        enemies.push_back(spawn_enemy(
+            static_cast<enemy_ai_type>(get_weighted_random(RANDOM, ACE)),
+            get_random_num(200, 1000), get_weighted_random_float(0.9f, 5)));
+      }
+    } else {
+      if (enemies.empty()) {
+        enemies.push_back(
+            spawn_enemy(BOSS, BOSS_RELOAD, level_screen_limit.h / 19));
+        boss_mode[1] = true;
+      }
     }
 
     SDL_SetRenderDrawColor(main_sdl_session.renderer, 0, 0, 0, 255);
@@ -210,15 +229,22 @@ play_level(const float initial_score_multiplyer) {
             if (SDL_HasRectIntersectionFloat(&p.rect, &e.ship.rect)) {
               e.ship.health -= p.damage;
               if (e.ship.health <= 0) {
-                // TODO play explosion or something
-                score += (((e.type + 1) * 10) * e.size_multiplier) *
-                         score_multiplyer;
-                if (get_random_num(0, 15 / e.size_multiplier) == 0) {
-                  powerups.push_back(summon_powerup(
-                      {e.ship.rect.x, e.ship.rect.y},
-                      static_cast<powerup_efect_type>(
-                          get_weighted_random(powerup_efect_type::TWO_X,
-                                              powerup_efect_type::FIVE_X))));
+                if (e.type != BOSS) {
+                  // TODO play explosion or something
+                  score += (((e.type + 1) * 10) * e.size_multiplier) *
+                           score_multiplyer;
+                  if (get_random_num(0, 15 / e.size_multiplier) == 0) {
+                    powerups.push_back(summon_powerup(
+                        {e.ship.rect.x, e.ship.rect.y},
+                        static_cast<powerup_efect_type>(
+                            get_weighted_random(powerup_efect_type::TWO_X,
+                                                powerup_efect_type::FIVE_X))));
+                  }
+
+                } else {
+                  boss_count++;
+                  boss_mode = {false, false};
+                  score += 500;
                 }
                 SDL_DestroyTexture(e.ship.texture);
                 enemies.erase(enemies.begin() + (&e - enemies.data()));
@@ -248,7 +274,7 @@ play_level(const float initial_score_multiplyer) {
         SDL_DestroyTexture(e.ship.texture);
         enemies.erase(enemies.begin() + (&e - enemies.data()));
       } else {
-        step_enemy(e, player_ship, projectiles);
+        step_enemy(e, player_ship, projectiles, powerups);
       }
     }
     // process powerups

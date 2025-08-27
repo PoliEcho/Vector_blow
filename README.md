@@ -62,7 +62,7 @@ if it fills up you have to wait to reach half before you can shoot again
 | FLYER | on average faster firerate, moves up and down on screen and shoot providing cover fire for other units |
 | GUNNER | this enemy will lock on you ships signature and always stays drectly in front of the player and randomly fire |
 | ACE | this enemy will always fire if it sees the player in front of it, also it will attempt to doge player's shots, if not evading player's projectiles, it will attempt to get into fire position |
-| BOSS | NOT IMPLEMENTED |
+| BOSS | spawns on every multiple of 5000 points e.g. 5000,10000... Likes to wait until all other ships in the area are destroyed then attacks once he reaches his fireing position, he start using his deflector, but there is hope enemy engineers cheaped out on power supply for the deflector so the pulse itegnity is compromised maybe you could use this to survive his attacks, boss health is allways increased e.g. 1000, 2000, 3000, .... |
 
 ### power ups  
 

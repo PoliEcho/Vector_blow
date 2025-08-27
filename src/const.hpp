@@ -26,3 +26,6 @@ constexpr char *lose_text[] = {"You ship was destroyed",
 #define POWERUP_LIFE_TIME 15000
 #define DEFAULT_POWERUP_DURATION 15000
 #define LOSE_TEXT_HEIGHT_DEVIDER 45
+#define BOSS_POINTS_APPEAR 5000
+#define BOSS_RELOAD 6000
+#define BOSS_HEALTH 1000

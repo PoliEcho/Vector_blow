@@ -2,6 +2,7 @@
 #include "main.hpp"
 #include "meth.hpp"
 #include "misc.hpp"
+#include "powerups.hpp"
 #include "projectiles.hpp"
 #include "types.hpp"
 #include <SDL3/SDL_rect.h>
@@ -27,7 +28,14 @@ enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
   enemy.ship.gun_offset.x = 0;
   enemy.ship.gun_offset.y = 0.5f * enemy.ship.texture->h;
   enemy.size_multiplier = multiplier;
-  enemy.ship.health = multiplier * BASE_PROJECTILE_DAMAGE;
+  if (ai_type == BOSS) {
+    static int times_appeared = 1;
+    enemy.ship.health = times_appeared * BOSS_HEALTH;
+    times_appeared++;
+    std::clog << "boss health: " << enemy.ship.health << "\n";
+  } else {
+    enemy.ship.health = multiplier * BASE_PROJECTILE_DAMAGE;
+  }
 
   if (ai_type == FLYER) {
     enemy.target = {(level_screen_limit.x + level_screen_limit.w) -
@@ -40,7 +48,8 @@ enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
 }
 
 void step_enemy(enemy_type &e, ship_type &player_ship,
-                std::vector<projectile> &projectiles) {
+                std::vector<projectile> &projectiles,
+                std::vector<powerup_type> &powerups) {
   switch (e.type) {
   case RANDOM:
     switch (get_random_num(0, 3)) {
@@ -197,8 +206,47 @@ void step_enemy(enemy_type &e, ship_type &player_ship,
     e.ship.rect.x--;
 
   } break;
-  case BOSS:
-    break;
+  case BOSS: {
+    if (e.ship.rect.x <=
+        static_cast<float>(mode->w) *
+            static_cast<float>(static_cast<float>(7) / static_cast<float>(8))) {
+      if (SDL_GetTicks() - e.last_shot > e.reload_time) {
+        int hole_start_index =
+            get_random_num(0, (level_screen_limit.h / 20) - 5);
+        int holes = 5;
+        int j = 0;
+        for (int i = level_screen_limit.y;
+             i < level_screen_limit.y + level_screen_limit.h; i += 20) {
+          if (!(j >= hole_start_index && holes != 0)) {
+            projectiles.push_back(spawn_projectile(
+                {static_cast<float>(static_cast<float>(mode->w) *
+                                    static_cast<float>(static_cast<float>(7) /
+                                                       static_cast<float>(8))),
+                 static_cast<float>(i)},
+                4, 270, 2, "assets/basic_projectile.svg", nullptr, FOE,
+                BASE_PROJECTILE_DAMAGE * 2.5f));
+          } else {
+            holes--;
+          }
+          j++;
+        }
+        e.last_shot = SDL_GetTicks();
+      }
+      if (get_random_num(0, 3500) == 0) {
+        powerups.push_back(summon_powerup(
+            {static_cast<float>(
+                 get_random_num(level_screen_limit.x,
+                                level_screen_limit.x + level_screen_limit.w)),
+             static_cast<float>(
+                 get_random_num(level_screen_limit.y,
+                                level_screen_limit.y + level_screen_limit.h))},
+            static_cast<powerup_efect_type>(get_random_num(
+                powerup_efect_type::BOOM, powerup_efect_type::BEAM))));
+      }
+    } else {
+      e.ship.rect.x -= 0.5f;
+    }
+  } break;
   }
   SDL_RenderTexture(main_sdl_session.renderer, e.ship.texture, nullptr,
                     &e.ship.rect);

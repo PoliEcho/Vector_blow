@@ -29,18 +29,6 @@ run:
 make -j
 ```
 
-#### to Windows cross compile
-#### you will need:
-> x86_64-w64-mingw32  
-> other dependencies mxe will tell you to install  
-```bash
-git submodule --init
-cd mxe
-make MXE_TARGETS='x86_64-w64-mingw32.static' sdl3 sdl3_image
-cd ..
-make win_cross
-```
-
 ## Gameplay  
 
 ### shooting  

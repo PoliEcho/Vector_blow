@@ -6,6 +6,7 @@ simple side scrolling sci-fi arcade game inspired by Tempest, Defender(1981) and
 > press SPACE to start  
 > than SPACE to shoot but caution you weapon may overheat  
 > WASD or ARROW to move  
+> you health is showed on top by red bar  
 > on the end screen wait for few seconds and than press SPACE to play again or Q to quit (your highscore is saved to file automaticly)  
 
 

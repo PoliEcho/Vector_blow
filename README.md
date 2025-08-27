@@ -10,7 +10,7 @@ simple side scrolling sci-fi arcade game inspired by Tempest, Defender(1981) and
 
 
 ## how to get the game 
-either go to release page of this repo TODO PUT LINK HERE and download the game or build it see instructions below  
+either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector_blow/releases) and download the game or build it see instructions below  
 you will still need to install folowing dependencies:  
 > SDL3  
 > SDL3_image  

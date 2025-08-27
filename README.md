@@ -24,7 +24,8 @@ you will still need to install folowing dependencies:
 
 ### how to build  
 #### you will need:
-> gcc (g++) (C++23 compatable)  
+> gcc (g++) (C++23 compatable)
+> pkg-config  
 > make  
 > SDL3  
 > SDL3_image  

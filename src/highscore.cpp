@@ -5,12 +5,21 @@
 #include <string>
 
 std::string get_filename() {
+#ifdef _WIN32
+  std::string path = std::getenv("USERPROFILE");
+  if (path.empty()) {
+    std::cerr << "USERPROFILE environment variable not set\n";
+    std::exit(1);
+  }
+  path.append("/AppData/Local/Vector_blow");
+#else
   std::string path = std::getenv("HOME");
   if (path.empty()) {
     std::cerr << "HOME environment variable not set\n";
     std::exit(1);
   }
   path.append("/.local/share/Vector_blow");
+#endif
   std::filesystem::create_directories(path);
   path.append("/highscore");
   return path;

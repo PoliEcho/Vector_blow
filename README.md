@@ -1,4 +1,5 @@
 # Vector blow
+[![Build on macOS](https://github.com/PoliEcho/Vector_blow/actions/workflows/build_macos.yml/badge.svg)](https://github.com/PoliEcho/Vector_blow/actions/workflows/build_macos.yml)  
 simple side scrolling sci-fi arcade game inspired by Tempest, Defender(1981) and others
 
 ## How to play  

@@ -32,7 +32,6 @@ enemy_type spawn_enemy(enemy_ai_type ai_type, Uint32 reload_time,
     static int times_appeared = 1;
     enemy.ship.health = times_appeared * BOSS_HEALTH;
     times_appeared++;
-    std::clog << "boss health: " << enemy.ship.health << "\n";
   } else {
     enemy.ship.health = multiplier * BASE_PROJECTILE_DAMAGE;
   }

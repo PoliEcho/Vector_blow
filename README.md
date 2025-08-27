@@ -30,6 +30,7 @@ you will still need to install folowing dependencies:
 > SDL3_image  
 
 #### to compile
+##### this should work on any Unix-like system as well as WSL  
 run:
 ```bash
 make -j

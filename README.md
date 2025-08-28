@@ -62,6 +62,22 @@ sudo zypper install -t pattern devel_basis
 sudo zypper install gcc gcc-c++ cmake git pkg-config make
 ```
 
+### Gentoo Linux  
+```bash
+emerge --sync
+
+emerge --ask sys-devel/gcc sys-devel/binutils dev-vcs/git \
+              dev-build/cmake virtual/pkgconfig sys-devel/make
+
+# For GCC with specific C++ standard support
+emerge --ask =sys-devel/gcc-13.2.1  # For C++23 support
+```
+
+### Alpine Linux  
+```bash
+apk update && apk upgrade
+apk add build-base gcc g++ cmake git pkgconf make
+```
 
 ### FreeBSD
 

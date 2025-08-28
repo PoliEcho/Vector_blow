@@ -16,7 +16,7 @@ std::string get_filename() {
   std::string path = std::getenv("HOME");
   if (path.empty()) {
     std::cerr << "HOME environment variable not set\n";
-    std::exit(1);
+    return "";
   }
   path.append("/.local/share/Vector_blow");
 #endif
@@ -28,8 +28,8 @@ std::string get_filename() {
 Uint64 get_highscore() {
   std::ifstream highscore_file(get_filename());
   if (!highscore_file.is_open()) {
-    std::cerr << "failed to open file\n";
-    std::exit(78);
+    std::cerr << "failed to get highscore\n";
+    return 0;
   }
 
   std::string highscore_str((std::istreambuf_iterator<char>(highscore_file)),
@@ -45,6 +45,10 @@ Uint64 get_highscore() {
 
 void set_highscore(Uint64 highscore) {
   std::ofstream highscore_file(get_filename());
+  if (!highscore_file.is_open()) {
+    std::cerr << "failed to set highscore\n";
+    return;
+  }
   highscore_file << highscore;
   highscore_file.close();
 }

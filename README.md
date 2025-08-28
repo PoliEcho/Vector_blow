@@ -16,7 +16,7 @@ either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector
 
 ### how to build  
 #### you will need:
-> gcc (g++) (C++23 compatable)
+> c++ compiler (g++ recomended) (C++23 compatable)
 > pkg-config  
 > make  
 > CMake  

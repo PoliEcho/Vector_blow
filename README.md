@@ -21,7 +21,75 @@ either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector
 > make  
 > CMake  
 
-#### to compile
+## how to get dependencies on diferent systems
+### Ubuntu/Debian and Derivatives
+
+```bash
+sudo apt update && sudo apt upgrade
+
+sudo apt install build-essential gcc g++ cmake git pkg-config make
+```
+
+### Fedora/RHEL/CentOS and Derivatives
+
+```bash
+sudo dnf update
+
+sudo dnf install gcc gcc-c++ cmake git pkg-config make
+
+# For older systems using yum
+sudo yum groupinstall "Development Tools"
+sudo yum install gcc gcc-c++ cmake git pkg-config make
+```
+
+
+### Arch Linux/Manjaro and Derivatives
+
+
+```bash
+sudo pacman -Syyu
+sudo pacman -S base-devel gcc cmake git pkg-config make
+
+```
+
+### openSUSE/SUSE
+
+```bash
+sudo zypper refresh && sudo zypper update
+
+sudo zypper install -t pattern devel_basis
+sudo zypper install gcc gcc-c++ cmake git pkg-config make
+```
+
+
+### FreeBSD
+
+```bash
+sudo pkg update && sudo pkg upgrade
+sudo pkg install gcc cmake git pkgconf gmake
+
+# Using ports system (alternative method)
+sudo portsnap fetch update
+cd /usr/ports/lang/gcc && sudo make install clean
+cd /usr/ports/devel/cmake && sudo make install clean
+cd /usr/ports/devel/git && sudo make install clean
+```
+
+**Note**: build instructions may be bit diferent for FreeBSD
+
+### macOS
+
+
+```bash
+# Install Homebrew first (if not already installed)
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+brew update
+brew install git pkg-config
+```
+
+
+## to compile
 ##### this should work on any Unix-like system as well as WSL  
 run:
 ```bash

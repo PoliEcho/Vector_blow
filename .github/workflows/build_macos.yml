@@ -25,4 +25,9 @@ jobs:
         echo "CPPC=g++-$GCC_VERSION" >> $GITHUB_ENV
         
     - name: Build
-      run: make -j$(sysctl -n hw.ncpu)
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make -j$(sysctl -n hw.ncpu)
+        cd ..        

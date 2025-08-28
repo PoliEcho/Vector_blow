@@ -12,14 +12,6 @@ simple side scrolling sci-fi arcade game inspired by Tempest, Defender(1981) and
 
 ## how to get the game 
 either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector_blow/releases) and download the game or build it see instructions below  
-you will still need to install folowing dependencies:  
-> SDL3  
-> SDL3_image  
-
-
-> [!CAUTION]  
-> copy downloaded binary to root of cloned repo otherwise it wont work  
-> you need the assets folder  
 
 
 ### how to build  
@@ -27,8 +19,8 @@ you will still need to install folowing dependencies:
 > gcc (g++) (C++23 compatable)
 > pkg-config  
 > make  
-> SDL3  
-> SDL3_image  
+> [SDL3](https://github.com/libsdl-org/SDL/releases/tag/release-3.2.4)  
+> [SDL3_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-3.2.4)  
 
 #### to compile
 ##### this should work on any Unix-like system as well as WSL  
@@ -36,7 +28,11 @@ run:
 ```bash
 make -j
 ```
-
+#### to run  
+run:
+```bash
+./build/bin/Vector_blow
+```
 ## Gameplay  
 
 ### shooting  

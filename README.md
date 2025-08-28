@@ -21,6 +21,37 @@ either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector
 > make  
 > [SDL3](https://github.com/libsdl-org/SDL/releases/tag/release-3.2.4)  
 > [SDL3_image](https://github.com/libsdl-org/SDL_image/releases/tag/release-3.2.4)  
+<details>
+  <summary>How to install SDL3</summary>
+    <h3>Arch Linux</h3>
+<pre><code class="language-bash"># use your favorite aur helper
+yay -S sdl3 sdl3_image
+</code></pre>
+
+<h3>Gentoo Linux</h3>
+<pre><code class="language-bash">emerge --ask media-libs/libsdl3 media-libs/sdl3-image</code></pre>
+
+<h3>Ubuntu Linux >=25.04 Plucky or Debian Linux >=13 Trixie</h3>
+<pre><code class="language-bash">apt install libsdl3-dev libsdl3-image-dev</code></pre>
+
+<h3>Fedora Linux</h3>
+<pre><code class="language-bash">dnf install SDL3 SDL3_image</code></pre>
+
+<h3>SDL3 not in package manager Linux</h3>
+<pre><code class="language-bash">wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.20/SDL3-3.2.20.zip
+wget https://github.com/libsdl-org/SDL_image/releases/download/release-3.2.4/SDL3_image-3.2.4.zip
+unzip SDL3-3.2.20.zip
+cd SDL3-3.2.20
+cmake -S . -B build
+cmake --build build
+sudo cmake --install build --prefix /usr
+unzip SDL3_image-3.2.4.zip
+cd SDL3_image-3.2.4
+cmake -S . -B build
+cmake --build build
+sudo cmake --install build --prefix /usr
+</code></pre>
+</details>  
 
 #### to compile
 ##### this should work on any Unix-like system as well as WSL  

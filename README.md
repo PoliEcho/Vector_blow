@@ -16,10 +16,11 @@ either go to release page of this repo [HERE](https://github.com/PoliEcho/Vector
 
 ### how to build  
 #### you will need:
-> c++ compiler (g++ recomended) (C++23 compatable)
+> c++ compiler (g++ recomended) (C++23 compatable)  
 > pkg-config  
 > make  
 > CMake  
+> git  
 
 #### to compile
 ##### this should work on any Unix-like system as well as WSL  

@@ -16,7 +16,7 @@ jobs:
     - name: Install dependencies
       run: |
         brew update
-        brew install gcc sdl3 sdl3_image pkg-config
+        brew install gcc make cmake pkg-config
 
     - name: Set up compiler
       run: |

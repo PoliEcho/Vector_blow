@@ -36,6 +36,8 @@ yay -S sdl3 sdl3_image
 
 <h3>Fedora Linux</h3>
 <pre><code class="language-bash">dnf install SDL3 SDL3_image</code></pre>
+<br>
+<h3>try searching your package manager for "sdl3", "sdl3-image" or "sdl3_image"</h3><br>
 
 <h3>SDL3 not in package manager Linux</h3>
 <pre><code class="language-bash">wget https://github.com/libsdl-org/SDL/releases/download/release-3.2.20/SDL3-3.2.20.zip
